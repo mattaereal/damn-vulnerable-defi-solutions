@@ -27,9 +27,9 @@ contract PuppetPool is ReentrancyGuard {
     // Allows borrowing `borrowAmount` of tokens by first depositing two times their value in ETH
     function borrow(uint256 borrowAmount) public payable nonReentrant {
         uint256 depositRequired = calculateDepositRequired(borrowAmount);
-        
+
         require(msg.value >= depositRequired, "Not depositing enough collateral");
-        
+
         if (msg.value > depositRequired) {
             payable(msg.sender).sendValue(msg.value - depositRequired);
         }
@@ -42,6 +42,9 @@ contract PuppetPool is ReentrancyGuard {
         emit Borrowed(msg.sender, depositRequired, borrowAmount);
     }
 
+    /**
+     * 
+     */
     function calculateDepositRequired(uint256 amount) public view returns (uint256) {
         return amount * _computeOraclePrice() * 2 / 10 ** 18;
     }

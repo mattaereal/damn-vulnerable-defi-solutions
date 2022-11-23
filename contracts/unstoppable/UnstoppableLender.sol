@@ -36,11 +36,21 @@ contract UnstoppableLender is ReentrancyGuard {
         uint256 balanceBefore = damnValuableToken.balanceOf(address(this));
         require(balanceBefore >= borrowAmount, "Not enough tokens in pool");
 
+        
+        /* @audit-info
+        * Making this assert fail would break the flashLoan functionality.
+        * Since depositTokens is not the only way to transfer tokens to the pool
+        * we can directly go to the token contract and run a transfer.
+        * This will update balanceOf but not poolBalance.
+        */
+
         // Ensured by the protocol via the `depositTokens` function
         assert(poolBalance == balanceBefore);
         
+        // Envía
         damnValuableToken.transfer(msg.sender, borrowAmount);
         
+        // Recibe
         IReceiver(msg.sender).receiveTokens(address(damnValuableToken), borrowAmount);
         
         uint256 balanceAfter = damnValuableToken.balanceOf(address(this));

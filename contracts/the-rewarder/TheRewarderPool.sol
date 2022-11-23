@@ -34,6 +34,7 @@ contract TheRewarderPool {
     // Track number of rounds
     uint256 public roundNumber;
 
+    // @audit-ok
     constructor(address tokenAddress) {
         // Assuming all three tokens have 18 decimals
         liquidityToken = DamnValuableToken(tokenAddress);
@@ -42,8 +43,9 @@ contract TheRewarderPool {
 
         _recordSnapshot();
     }
-
-    /**
+    
+    // @audit-ok
+    /** 
      * @notice sender must have approved `amountToDeposit` liquidity tokens in advance
      */
     function deposit(uint256 amountToDeposit) external {
@@ -57,11 +59,13 @@ contract TheRewarderPool {
         );
     }
 
+    // @audit-ok
     function withdraw(uint256 amountToWithdraw) external {
         accToken.burn(msg.sender, amountToWithdraw);
         require(liquidityToken.transfer(msg.sender, amountToWithdraw));
     }
 
+    // @audit
     function distributeRewards() public returns (uint256) {
         uint256 rewards = 0;
 
@@ -84,12 +88,14 @@ contract TheRewarderPool {
         return rewards;     
     }
 
+    // @audit-ok
     function _recordSnapshot() private {
         lastSnapshotIdForRewards = accToken.snapshot();
         lastRecordedSnapshotTimestamp = block.timestamp;
         roundNumber++;
     }
 
+    // @audit-ok
     function _hasRetrievedReward(address account) private view returns (bool) {
         return (
             lastRewardTimestamps[account] >= lastRecordedSnapshotTimestamp &&
@@ -97,6 +103,7 @@ contract TheRewarderPool {
         );
     }
 
+    // @audit-ok
     function isNewRewardsRound() public view returns (bool) {
         return block.timestamp >= lastRecordedSnapshotTimestamp + REWARDS_ROUND_MIN_DURATION;
     }

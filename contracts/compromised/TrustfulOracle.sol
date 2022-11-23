@@ -34,7 +34,8 @@ contract TrustfulOracle is AccessControlEnumerable {
         uint256 oldPrice,
         uint256 newPrice
     );
-
+    
+    // @audit-ok
     constructor(address[] memory sources, bool enableInitialization) {
         require(sources.length > 0);
         for(uint256 i = 0; i < sources.length; i++) {

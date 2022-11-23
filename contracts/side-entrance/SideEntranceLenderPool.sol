@@ -14,7 +14,7 @@ interface IFlashLoanEtherReceiver {
 contract SideEntranceLenderPool {
     using Address for address payable;
 
-    mapping (address => uint256) private balances;
+    mapping (address => uint256) public balances;
 
     function deposit() external payable {
         balances[msg.sender] += msg.value;
