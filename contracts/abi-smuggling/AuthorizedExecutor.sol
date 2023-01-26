@@ -49,12 +49,12 @@ abstract contract AuthorizedExecutor is ReentrancyGuard {
     function execute(address target, bytes calldata actionData) external nonReentrant returns (bytes memory) {
         // Read the 4-bytes selector at the beginning of `actionData`
         bytes4 selector;
-        uint256 calldataOffset = 4 + 32 * 3; // calldata position where `actionData` begins
+        uint256 calldataOffset = 4 + 32 * 3; // calldata position where `actionData` begins @audit-issue
         assembly {
-            selector := calldataload(calldataOffset)
+            selector := calldataload(calldataOffset) // loads 32 bytes starting from 100 bytes shift in calldata
         }
 
-        if (!permissions[getActionId(selector, msg.sender, target)]) {
+        if (!permissions[getActionId(selector, msg.sender, target)]) { // @audit bypass this sh!t
             revert NotAllowed();
         }
 

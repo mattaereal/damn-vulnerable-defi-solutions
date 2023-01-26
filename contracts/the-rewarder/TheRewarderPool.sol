@@ -33,36 +33,21 @@ contract TheRewarderPool {
     uint64 public roundNumber; // Track number of rounds
     mapping(address => uint64) public lastRewardTimestamps;
 
-<<<<<<< HEAD
-    // @audit-ok
-    constructor(address tokenAddress) {
-        // Assuming all three tokens have 18 decimals
-        liquidityToken = DamnValuableToken(tokenAddress);
-        accToken = new AccountingToken();
-=======
     error InvalidDepositAmount();
 
     constructor(address _token) {
         // Assuming all tokens have 18 decimals
         liquidityToken = _token;
         accountingToken = new AccountingToken();
->>>>>>> upstream/master
         rewardToken = new RewardToken();
 
         _recordSnapshot();
     }
-<<<<<<< HEAD
-    
-    // @audit-ok
-    /** 
-     * @notice sender must have approved `amountToDeposit` liquidity tokens in advance
-=======
 
     /**
      * @notice Deposit `amount` liquidity tokens into the pool, minting accounting tokens in exchange.
      *         Also distributes rewards if available.
      * @param amount amount of tokens to be deposited
->>>>>>> upstream/master
      */
     function deposit(uint256 amount) external {
         if (amount == 0) {
@@ -80,19 +65,6 @@ contract TheRewarderPool {
         );
     }
 
-<<<<<<< HEAD
-    // @audit-ok
-    function withdraw(uint256 amountToWithdraw) external {
-        accToken.burn(msg.sender, amountToWithdraw);
-        require(liquidityToken.transfer(msg.sender, amountToWithdraw));
-    }
-
-    // @audit
-    function distributeRewards() public returns (uint256) {
-        uint256 rewards = 0;
-
-        if(isNewRewardsRound()) {
-=======
     function withdraw(uint256 amount) external {
         accountingToken.burn(msg.sender, amount);
         SafeTransferLib.safeTransfer(liquidityToken, msg.sender, amount);
@@ -100,7 +72,6 @@ contract TheRewarderPool {
 
     function distributeRewards() public returns (uint256 rewards) {
         if (isNewRewardsRound()) {
->>>>>>> upstream/master
             _recordSnapshot();
         }
 

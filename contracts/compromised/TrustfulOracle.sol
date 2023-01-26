@@ -20,24 +20,8 @@ contract TrustfulOracle is AccessControlEnumerable {
 
     error NotEnoughSources();
 
-<<<<<<< HEAD
-    modifier onlyInitializer() {
-        require(hasRole(INITIALIZER_ROLE, msg.sender));
-        _;
-    }
-
-    event UpdatedPrice(
-        address indexed source,
-        string indexed symbol,
-        uint256 oldPrice,
-        uint256 newPrice
-    );
-    
-    // @audit-ok
-=======
     event UpdatedPrice(address indexed source, string indexed symbol, uint256 oldPrice, uint256 newPrice);
 
->>>>>>> upstream/master
     constructor(address[] memory sources, bool enableInitialization) {
         if (sources.length < MIN_SOURCES)
             revert NotEnoughSources();

