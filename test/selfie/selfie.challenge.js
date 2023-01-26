@@ -1,47 +1,44 @@
-const { ethers } = require("hardhat");
-const { expect } = require("chai");
+const { ethers } = require('hardhat');
+const { expect } = require('chai');
+const { time } = require("@nomicfoundation/hardhat-network-helpers");
 
-describe("[Challenge] Selfie", function () {
-  let deployer, attacker;
+describe('[Challenge] Selfie', function () {
+    let deployer, player;
+    let token, governance, pool;
 
-  const TOKEN_INITIAL_SUPPLY = ethers.utils.parseEther("2000000"); // 2 million tokens
-  const TOKENS_IN_POOL = ethers.utils.parseEther("1500000"); // 1.5 million tokens
+    const TOKEN_INITIAL_SUPPLY = 2000000n * 10n ** 18n;
+    const TOKENS_IN_POOL = 1500000n * 10n ** 18n;
+    
+    before(async function () {
+        /** SETUP SCENARIO - NO NEED TO CHANGE ANYTHING HERE */
+        [deployer, player] = await ethers.getSigners();
 
-  before(async function () {
-    /** SETUP SCENARIO - NO NEED TO CHANGE ANYTHING HERE */
-    [deployer, attacker] = await ethers.getSigners();
+        // Deploy Damn Valuable Token Snapshot
+        token = await (await ethers.getContractFactory('DamnValuableTokenSnapshot', deployer)).deploy(TOKEN_INITIAL_SUPPLY);
 
-    const DamnValuableTokenSnapshotFactory = await ethers.getContractFactory(
-      "DamnValuableTokenSnapshot",
-      deployer
-    );
-    const SimpleGovernanceFactory = await ethers.getContractFactory(
-      "SimpleGovernance",
-      deployer
-    );
-    const SelfiePoolFactory = await ethers.getContractFactory(
-      "SelfiePool",
-      deployer
-    );
+        // Deploy governance contract
+        governance = await (await ethers.getContractFactory('SimpleGovernance', deployer)).deploy(token.address);
+        expect(await governance.getActionCounter()).to.eq(1);
 
-    this.token = await DamnValuableTokenSnapshotFactory.deploy(
-      TOKEN_INITIAL_SUPPLY
-    );
-    this.governance = await SimpleGovernanceFactory.deploy(this.token.address);
-    this.pool = await SelfiePoolFactory.deploy(
-      this.token.address,
-      this.governance.address
-    );
+        // Deploy the pool
+        pool = await (await ethers.getContractFactory('SelfiePool', deployer)).deploy(
+            token.address,
+            governance.address    
+        );
+        expect(await pool.token()).to.eq(token.address);
+        expect(await pool.governance()).to.eq(governance.address);
+        
+        // Fund the pool
+        await token.transfer(pool.address, TOKENS_IN_POOL);
+        await token.snapshot();
+        expect(await token.balanceOf(pool.address)).to.be.equal(TOKENS_IN_POOL);
+        expect(await pool.maxFlashLoan(token.address)).to.eq(TOKENS_IN_POOL);
+        expect(await pool.flashFee(token.address, 0)).to.eq(0);
 
-    await this.token.transfer(this.pool.address, TOKENS_IN_POOL);
+    });
 
-    expect(await this.token.balanceOf(this.pool.address)).to.be.equal(
-      TOKENS_IN_POOL
-    );
-  });
-
-  it("Exploit", async function () {
-    /** CODE YOUR EXPLOIT HERE */
+  it("Execution", async function () {
+    /** CODE YOUR SOLUTION HERE */
     /**
      * It's really silly to apply governance on a contract that uses the same
      * asset to give flashloans. You can ask for a flashLoan at max. cap., and
@@ -76,13 +73,15 @@ describe("[Challenge] Selfie", function () {
     this.governance.executeAction(actionExploitId);
   });
 
-  after(async function () {
-    /** SUCCESS CONDITIONS */
+    after(async function () {
+        /** SUCCESS CONDITIONS - NO NEED TO CHANGE ANYTHING HERE */
 
-    // Attacker has taken all tokens from the pool
-    expect(await this.token.balanceOf(attacker.address)).to.be.equal(
-      TOKENS_IN_POOL
-    );
-    expect(await this.token.balanceOf(this.pool.address)).to.be.equal("0");
-  });
+        // Player has taken all tokens from the pool
+        expect(
+            await token.balanceOf(player.address)
+        ).to.be.equal(TOKENS_IN_POOL);        
+        expect(
+            await token.balanceOf(pool.address)
+        ).to.be.equal(0);
+    });
 });
