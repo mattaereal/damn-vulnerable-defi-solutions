@@ -5,9 +5,18 @@
  |___/\__,_|_|_|_|_||_|   \_/ \_,_|_|_||_\___|_| \__,_|_.__|_\___| |___/\___|_| |_|
                                                                                    
 ```
-**A set of challenges to learn offensive security of smart contracts in Ethereum.**
+**A set of solutions for challenges to learn offensive security of smart contracts in Ethereum.**
 
 Featuring flash loans, price oracles, governance, NFTs, lending pools, smart contract wallets, timelocks, and more!
+
+## TODO
+- Implement Puppet to be solved under 1 transaction.
+- Implement FreeRider's exploit
+- Solve: Backdoor, Climber, Wallet Mining, Puppet V3
+
+## WriteUps
+- [ABI Smuggling with infographic!](https://medium.com/@mattaereal/damnvulnerabledefi-abi-smuggling-challenge-walkthrough-plus-infographic-7098855d49a)
+
 
 ## Play
 

